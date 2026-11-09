@@ -654,7 +654,7 @@
                 (targets (list "/boot/efi"))
                 (keyboard-layout keyboard-layout)))
   (mapped-devices (list (mapped-device
-                          ;; @LUKS_UUID@ is filled in by install/02-fill-config.sh.
+                          ;; UUID filled in by install/02-fill-config.sh.
                           (source (uuid "@LUKS_UUID@"))
                           (target "cryptroot")
                           (type luks-device-mapping))))
@@ -679,7 +679,7 @@
                          (dependencies mapped-devices))
                        (file-system
                          (mount-point "/boot/efi")
-                         ;; @EFI_UUID@ is filled in by install/02-fill-config.sh.
+                         ;; UUID filled in by install/02-fill-config.sh.
                          (device (uuid "@EFI_UUID@" 'fat32))
                          (type "vfat"))
                        %base-file-systems)))
