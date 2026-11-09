@@ -31,12 +31,6 @@
   (plain-file "nonguix.pub"
    "(public-key (ecc (curve Ed25519) (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))"))
 
-(define nvidia-transform
-  (nonguix-transformation-nvidia #:driver nvda-595
-                                 #:open-source-kernel-module? #t
-                                 #:kernel-mode-setting? #t
-                                 #:dynamic-boost? #t))
-
 ; fix for no generated resolv.conf
 ; sudo rm /etc/resolv.conf
 ; sudo nmcli general reload dns-rc
@@ -453,7 +447,7 @@
     "snapshot"
     "decibels"
     "gnome-calculator"
-    "obs-nvidia"
+    "obs"
     "obs-wlrobs"
     "v4l-utils"
     "fuzzel"
@@ -462,8 +456,8 @@
     "mangohud"
     "gamemode"
     "cartridges"
-    "steam-nvidia"
-    "heroic-nvidia"
+    "steam"
+    "heroic"
     "protonup"))
 
 (define user-pharper
@@ -607,49 +601,49 @@
           (modify-services %base-services
             (delete mingetty-service-type))))
 
-(nvidia-transform (operating-system
-                    (locale "en_AU.utf8")
-                    (timezone "Asia/Phnom_Penh")
-                    (keyboard-layout (keyboard-layout "us"))
-                    (host-name system-hostname)
+(operating-system
+  (locale "en_AU.utf8")
+  (timezone "Asia/Phnom_Penh")
+  (keyboard-layout (keyboard-layout "us"))
+  (host-name system-hostname)
 
-                    ;; The list of user accounts ('root' is implicit).
-                    (users (cons* user-pharper %base-user-accounts))
-                    (kernel linux)
-                    (kernel-loadable-modules (list v4l2loopback-linux-module))
-                    (firmware (cons* linux-firmware %base-firmware))
-                    (packages (append (list mangowm-patch thunar-patch)
-                                      (specifications->packages packages-list)
-                                      %base-packages))
+  ;; The list of user accounts ('root' is implicit).
+  (users (cons* user-pharper %base-user-accounts))
+  (kernel linux)
+  (kernel-loadable-modules (list v4l2loopback-linux-module))
+  (firmware (cons* linux-firmware %base-firmware))
+  (packages (append (list mangowm-patch thunar-patch)
+                    (specifications->packages packages-list)
+                    %base-packages))
 
-                    ;; Below is the list of system services.  To search for available
-                    ;; services, run 'guix system search KEYWORD' in a terminal.
-                    (services
-                     services-list)
+  ;; Below is the list of system services.  To search for available
+  ;; services, run 'guix system search KEYWORD' in a terminal.
+  (services
+   services-list)
 
-                    (bootloader (bootloader-configuration
-                                  (bootloader grub-efi-bootloader)
-                                  (targets (list "/boot/efi"))
-                                  (keyboard-layout keyboard-layout)))
-                    (mapped-devices (list (mapped-device
-                                            (source (uuid
-                                                     "b4a9f8bc-2b2e-46ac-a8ff-0c50cb88efe3"))
-                                            (target "cryptroot")
-                                            (type luks-device-mapping))))
+  (bootloader (bootloader-configuration
+                (bootloader grub-efi-bootloader)
+                (targets (list "/boot/efi"))
+                (keyboard-layout keyboard-layout)))
+  (mapped-devices (list (mapped-device
+                          (source (uuid
+                                   "b4a9f8bc-2b2e-46ac-a8ff-0c50cb88efe3"))
+                          (target "cryptroot")
+                          (type luks-device-mapping))))
 
-                    ;; The list of file systems that get "mounted".  The unique
-                    ;; file system identifiers there ("UUIDs") can be obtained
-                    ;; by running 'blkid' in a terminal.
-                    (file-systems (cons* (file-system
-                                           (mount-point "/")
-                                           (device "/dev/mapper/cryptroot")
-                                           (type "btrfs")
-                                           (flags '(no-atime))
-                                           (options
-                                            "compress=zstd:3,space_cache=v2")
-                                           (dependencies mapped-devices))
-                                         (file-system
-                                           (mount-point "/boot/efi")
-                                           (device (uuid "2AA5-39A9"
-                                                         'fat32))
-                                           (type "vfat")) %base-file-systems))))
+  ;; The list of file systems that get "mounted".  The unique
+  ;; file system identifiers there ("UUIDs") can be obtained
+  ;; by running 'blkid' in a terminal.
+  (file-systems (cons* (file-system
+                         (mount-point "/")
+                         (device "/dev/mapper/cryptroot")
+                         (type "btrfs")
+                         (flags '(no-atime))
+                         (options
+                          "compress=zstd:3,space_cache=v2")
+                         (dependencies mapped-devices))
+                       (file-system
+                         (mount-point "/boot/efi")
+                         (device (uuid "2AA5-39A9"
+                                       'fat32))
+                         (type "vfat")) %base-file-systems)))
