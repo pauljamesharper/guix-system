@@ -26,7 +26,7 @@
              (midnight services noctalia-greeter))
 
 (define system-hostname
-  "zena")
+  "@HOSTNAME@") ; filled in by install/02-fill-config.sh
 
 (define nonguix-signing-key
   (plain-file "nonguix.pub"
@@ -467,18 +467,20 @@
     "heroic-nvidia"
     "protonup"))
 
-(define user-jian
+(define user-pharper
   (user-account
-    (name "jian")
-    (comment "Jian Zcar")
+    (name "pharper")
+    (comment "@FULL_NAME@") ; filled in by install/02-fill-config.sh
     (group "users")
-    (home-directory "/home/jian")
+    (home-directory "/home/pharper")
+    ;; Temporary; install/04-post-install.sh runs passwd on first boot.
+    (password (crypt "changeme" "$6$guixinit"))
     (supplementary-groups '("wheel" "netdev" "audio" "video" "kvm" "libvirt"))))
 
 (define podman-subids
   (map (lambda (user)
          (subid-range (name user)))
-       '("jian")))
+       '("pharper")))
 
 (define firewall-rules
   (local-file "./config/firewall/nftables.conf"))
@@ -560,7 +562,7 @@
                                                          (config-file (list
                                                                        greeter-conf))
                                                          (passwordless-sync-users '
-                                                          ("jian"))))
+                                                          ("pharper"))))
                 (service greetd-service-type
                          (greetd-configuration (greeter-supplementary-groups '
                                                                              ("video"
@@ -607,13 +609,13 @@
             (delete mingetty-service-type))))
 
 (nvidia-transform (operating-system
-                    (locale "en_PH.utf8")
-                    (timezone "Asia/Manila")
+                    (locale "en_AU.utf8")
+                    (timezone "Asia/Phnom_Penh")
                     (keyboard-layout (keyboard-layout "us"))
                     (host-name system-hostname)
 
                     ;; The list of user accounts ('root' is implicit).
-                    (users (cons* user-jian %base-user-accounts))
+                    (users (cons* user-pharper %base-user-accounts))
                     (kernel linux)
                     (kernel-loadable-modules (list v4l2loopback-linux-module))
                     (firmware (cons* linux-firmware %base-firmware))
