@@ -20,8 +20,7 @@
              (gnu packages password-utils)
              (gnu services virtualization)
              (nonguix)
-             (nongnu packages nvidia)
-             (nonguix transformations)
+             (nongnu packages linux)
              (rosenthal services networking)
              (midnight services noctalia-greeter))
 
