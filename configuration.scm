@@ -610,6 +610,9 @@
   ;; The list of user accounts ('root' is implicit).
   (users (cons* user-pharper %base-user-accounts))
   (kernel linux)
+  ;; OBS virtual camera.  v4l2loopback-linux-module is built against
+  ;; linux-libre by default, not the Nonguix kernel above: check it after
+  ;; first boot with `sudo modprobe v4l2loopback` and drop it if that fails.
   (kernel-loadable-modules (list v4l2loopback-linux-module))
   (firmware (cons* linux-firmware %base-firmware))
   (packages (append (list mangowm-patch thunar-patch)
