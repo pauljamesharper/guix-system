@@ -629,24 +629,32 @@
                 (targets (list "/boot/efi"))
                 (keyboard-layout keyboard-layout)))
   (mapped-devices (list (mapped-device
-                          (source (uuid
-                                   "b4a9f8bc-2b2e-46ac-a8ff-0c50cb88efe3"))
+                          ;; @LUKS_UUID@ is filled in by install/02-fill-config.sh.
+                          (source (uuid "@LUKS_UUID@"))
                           (target "cryptroot")
                           (type luks-device-mapping))))
 
-  ;; The list of file systems that get "mounted".  The unique
-  ;; file system identifiers there ("UUIDs") can be obtained
-  ;; by running 'blkid' in a terminal.
+  ;; btrfs subvolumes @ (/) and @home (/home) on LUKS2.  /boot stays inside
+  ;; the encrypted root and GRUB unlocks it, which is why the LUKS2 volume
+  ;; uses PBKDF2.  GRUB hands its unlocked key to the initrd, so the
+  ;; passphrase is asked for once.
   (file-systems (cons* (file-system
                          (mount-point "/")
                          (device "/dev/mapper/cryptroot")
                          (type "btrfs")
                          (flags '(no-atime))
-                         (options
-                          "compress=zstd:3,space_cache=v2")
+                         (options "subvol=@,compress=zstd:3,space_cache=v2")
+                         (dependencies mapped-devices))
+                       (file-system
+                         (mount-point "/home")
+                         (device "/dev/mapper/cryptroot")
+                         (type "btrfs")
+                         (flags '(no-atime))
+                         (options "subvol=@home,compress=zstd:3,space_cache=v2")
                          (dependencies mapped-devices))
                        (file-system
                          (mount-point "/boot/efi")
-                         (device (uuid "2AA5-39A9"
-                                       'fat32))
-                         (type "vfat")) %base-file-systems)))
+                         ;; @EFI_UUID@ is filled in by install/02-fill-config.sh.
+                         (device (uuid "@EFI_UUID@" 'fat32))
+                         (type "vfat"))
+                       %base-file-systems)))
