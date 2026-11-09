@@ -5,6 +5,7 @@
              (guix channels)
              (gnu)
              (gnu services pm)
+             (gnu services mcron)
              (gnu packages ssh)
              (gnu services dbus)
              (gnu packages bash)
@@ -345,6 +346,7 @@
     "ncurses"
     "btrfs-progs"
     "cryptsetup"
+    "snapper"
     "libsecret"
     "keepassxc"
 
@@ -490,6 +492,29 @@
                                 (guix-extension (substitute-urls '("https://cache-cdn.guix.moe"))
                                                 (authorized-keys (list
                                                                   nonguix-signing-key))))
+
+                ;; Hourly snapper snapshots of /home only: Guix generations
+                ;; already cover system rollback, and restoring a snapshot
+                ;; of / would leave /var/guix/db out of step with the store.
+                ;; Both jobs skip until install/04-post-install.sh has
+                ;; created /etc/snapper/configs/home.
+                (service mcron-service-type
+                         (mcron-configuration
+                          (jobs
+                           (list
+                            #~(job '(next-hour)
+                                   (string-append
+                                    "test -f /etc/snapper/configs/home && "
+                                    #$(file-append (specification->package "snapper")
+                                                   "/bin/snapper")
+                                    " --no-dbus -c home create"
+                                    " --cleanup-algorithm timeline --description timeline"))
+                            #~(job '(next-hour '(3))
+                                   (string-append
+                                    "test -f /etc/snapper/configs/home && "
+                                    #$(file-append (specification->package "snapper")
+                                                   "/bin/snapper")
+                                    " --no-dbus -c home cleanup timeline"))))))
 
                 (service zram-device-service-type
                          (zram-device-configuration (size "6G")
