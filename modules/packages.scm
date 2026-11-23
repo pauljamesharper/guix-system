@@ -3,8 +3,6 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages admin)
-  #:use-module (gnu packages elf)
-  #:use-module (nongnu packages nvidia)
   #:export (thunar-patch btop-patch packages-list))
 
 (define thunar-patch
@@ -30,8 +28,6 @@
   (package
     (inherit btop)
     (name "btop-patch")
-    (native-inputs (modify-inputs (package-native-inputs btop)
-                     (append patchelf)))
     (arguments
      (substitute-keyword-arguments (package-arguments btop)
        ((#:phases phases
@@ -44,12 +40,6 @@
                    (string-append "\""
                                   (assoc-ref outputs "out")
                                   "/share/btop/themes\"")))))
-            (add-after 'install 'add-nvidia-runpath
-              (lambda* (#:key outputs #:allow-other-keys)
-                (let ((binary (string-append (assoc-ref outputs "out")
-                                             "/bin/btop")))
-                  (invoke "patchelf" "--add-rpath"
-                          (string-append #$nvda-580 "/lib") binary))))
             (add-after 'install 'patch-desktop-entry
               (lambda* (#:key outputs #:allow-other-keys)
                 (let ((desktop (string-append (assoc-ref outputs "out")
@@ -180,7 +170,7 @@
     "decibels"
     "gnome-calculator"
     "ungoogled-chromium"
-    "obs-nvidia"
+    "obs"
     "obs-wlrobs"
     "v4l-utils"
     "fuzzel"
@@ -189,6 +179,6 @@
     "mangohud"
     "gamemode"
     "cartridges"
-    "steam-nvidia@580"
-    "heroic-nvidia@580"
+    "steam"
+    "heroic"
     "protonup"))

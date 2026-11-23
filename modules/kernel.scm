@@ -7,9 +7,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages linux)
   #:use-module (nongnu packages linux)
-  #:use-module (nongnu packages nvidia)
-  #:export (linux-cachyos-bore-intel nvidia-module-580-cachyos
-                                     v4l2loopback-linux-module-cachyos))
+  #:export (linux-cachyos-bore-intel v4l2loopback-linux-module-cachyos))
 
 (define cachyos-version
   "7.3.5-2")
@@ -95,15 +93,6 @@
     (synopsis "CachyOS BORE kernel optimized for x86-64")
     (description
      "CachyOS Linux kernel with BORE scheduler, CachyOS configuration, and native x86-64 CPU tuning.")))
-
-(define nvidia-module-580-cachyos
-  (package
-    (inherit nvidia-module-580)
-    (name "nvidia-module-580-cachyos")
-    (arguments
-     (substitute-keyword-arguments (package-arguments nvidia-module-580)
-       ((#:linux linux #f)
-        linux-cachyos-bore-intel)))))
 
 (define v4l2loopback-linux-module-cachyos
   (package

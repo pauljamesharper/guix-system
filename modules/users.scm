@@ -1,13 +1,13 @@
 (define-module (modules users)
   #:use-module (gnu system accounts)
-  #:export (user-jian podman-subids))
+  #:export (user-pharper podman-subids))
 
-(define user-jian
+(define user-pharper
   (user-account
-    (name "jian")
-    (comment "Jian Zcar")
+    (name "pharper")
+    (comment "Paul Harper")
     (group "users")
-    (home-directory "/home/jian")
+    (home-directory "/home/pharper")
     (supplementary-groups '("wheel" "netdev"
                             "input"
                             "audio"
@@ -19,4 +19,4 @@
 (define podman-subids
   (map (lambda (user)
          (subid-range (name user)))
-       '("jian")))
+       '("pharper")))

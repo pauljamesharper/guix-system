@@ -36,7 +36,7 @@ packages=(
   adwaita-icon-theme
 
   # Graphics
-  nvda@580
+  mesa
   mesa-utils
   vulkan-tools
 
@@ -54,10 +54,6 @@ guix shell \
   --share="$HOME" \
   --share=/tmp/.X11-unix \
   --share="$XDG_RUNTIME_DIR" \
-  --expose=/dev/nvidia0 \
-  --expose=/dev/nvidiactl \
-  --expose=/dev/nvidia-modeset \
-  --expose=/dev/nvidia-uvm \
   --expose=/dev/dri \
   --expose=/dev/snd \
   --expose=/sys \
@@ -70,8 +66,5 @@ guix shell \
   --preserve='^PULSE_SERVER$' \
   --preserve='^PIPEWIRE_REMOTE$' \
   --preserve='^XAUTHORITY$' \
-  --preserve='^__GLX_VENDOR_LIBRARY_NAME$' \
-  --preserve='^__NV_PRIME_RENDER_OFFLOAD$' \
-  --preserve='^__VK_LAYER_NV_optimus$' \
   "${packages[@]}" \
   -- "$@"

@@ -27,7 +27,6 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages password-utils)
   #:use-module (nonguix)
-  #:use-module (nongnu packages nvidia)
   #:use-module (rosenthal services networking)
   #:use-module (midnight services noctalia-greeter)
   #:use-module (modules desktop)
@@ -52,7 +51,7 @@
                 (service thermald-service-type)
 
                 (service zram-device-service-type
-                         (zram-device-configuration (size "24g")
+                         (zram-device-configuration (size "8g")
                                                     (compression-algorithm 'lz4)
                                                     (priority 100)))
 
@@ -125,7 +124,7 @@
                                                          (config-file (list
                                                                        greeter-conf))
                                                          (passwordless-sync-users '
-                                                          ("jian"))))
+                                                          ("pharper"))))
                 (service greetd-service-type
                          (greetd-configuration (greeter-supplementary-groups '
                                                                              ("video"

@@ -243,17 +243,6 @@
                            socket
                            (cdr (command-line))))))
 
-(define nv-script
-  (local-file "../scripts/nv"))
-
-(define nv
-  (program-file "nv"
-                #~(let ((status (apply system*
-                                       #$(file-append bash "/bin/bash")
-                                       #$nv-script
-                                       (cdr (command-line)))))
-                    (primitive-exit status))))
-
 (define run-game-script
   (local-file "../scripts/run-game"))
 
@@ -287,9 +276,6 @@
           (symlink #$desktop-herd
                    (string-append #$output "/bin/desktop-herd"))
 
-          (symlink #$nv
-                   (string-append #$output "/bin/nv"))
-
           (symlink #$run-game
                    (string-append #$output "/bin/run-game")))))
 
@@ -297,7 +283,7 @@
     (synopsis "Desktop session integration utilities")
     (description "Provides helper utilities for improved desktop experience,
 application integration, and session management.")
-    (home-page "https://github.com/JianZcar/guix-system")
+    (home-page "https://github.com/pauljamesharper/guix-system")
     (license #f)))
 
 (define mango-session
