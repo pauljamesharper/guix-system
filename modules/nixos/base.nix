@@ -55,6 +55,10 @@
       "kvm"
       "libvirtd"
     ];
+    # ssh logins (password logins are off, below): gUn's key
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKs80owStg2ShGvSArL4Yi7TFrtRS0eCgNelNw0AqbR8 harper.paul.j@gmail.com (gun)"
+    ];
   };
 
   # firmware, microcode (hardware.nix), firmware updates: fwupdmgr update
