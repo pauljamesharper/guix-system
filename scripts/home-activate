@@ -1,0 +1,121 @@
+#!/bin/bash
+# home-activate — run by Home Manager's activation on every rebuild
+# (modules/home). Does what stow and the mangobutter installer do on Debian.
+# Safe to re-run; never fails the rebuild (problems are warnings).
+#   MANGOBUTTER        store path of the mangobutter package
+#   DEFAULT_WALLPAPER  store path of the default wallpaper
+set -u
+warn() { echo "home-activate: $*" >&2; }
+
+DOTFILES="$HOME/dotfiles"
+SHARE="${XDG_DATA_HOME:-$HOME/.local/share}/mango"
+STATE="${XDG_STATE_HOME:-$HOME/.local/state}/mango"
+
+# --------------------------------------------------------------------------
+# Dotfiles (stow, as in dotfiles/README.md): every package but debian.
+# The two with user units without folding: ~/.config/systemd stays a real
+# folder, so other programs' units (Superwhisper's) don't land in the repo
+# --------------------------------------------------------------------------
+STOW_PACKAGES="bash mango mise yazi fastfetch geany thunar xdg khal khard starship vdirsyncer claude mangohud"
+
+if [ -d "$DOTFILES" ]; then
+    # real folders, as on Debian: stow links the folders inside them
+    # (~/.config/mango, ...) whole, but never these, which other programs
+    # write to (mise, Superwhisper, the mango setup, Claude Code)
+    mkdir -p "$HOME/.config/systemd/user" "$HOME/.local/bin" "$HOME/.local/share" \
+        "$HOME/.local/state" "$HOME/.claude"
+    # files a fresh home already has would block stow's links: keep them aside
+    for f in .bashrc .bash_logout .profile; do
+        if [ -f "$HOME/$f" ] && [ ! -L "$HOME/$f" ]; then
+            mv "$HOME/$f" "$HOME/$f.pre-stow"
+            echo "home-activate: moved ~/$f to ~/$f.pre-stow (dotfiles' takes its place)"
+        fi
+    done
+    # shellcheck disable=SC2086,SC2015
+    stow -d "$DOTFILES" -t "$HOME" -R $STOW_PACKAGES \
+        && stow -d "$DOTFILES" -t "$HOME" --no-folding -R emacs systemd \
+        || warn "stow failed (see above); fix the conflict and rebuild again"
+else
+    warn "no $DOTFILES: clone the dotfiles there and rebuild again"
+fi
+
+# the user units Debian's installer enables (systemctl --user enable,
+# done as links: there may be no user manager running yet)
+UNITS="$HOME/.config/systemd/user"
+enable_unit() { # unit target
+    [ -e "$UNITS/$1" ] || return 0
+    mkdir -p "$UNITS/$2.wants"
+    [ -L "$UNITS/$2.wants/$1" ] || ln -sfn "$UNITS/$1" "$UNITS/$2.wants/$1"
+}
+enable_unit emacs.service default.target
+enable_unit etesync-dav.service default.target
+enable_unit crash-watch.service default.target
+enable_unit agent-usage.timer timers.target
+enable_unit mise-upgrade.timer timers.target
+
+# --------------------------------------------------------------------------
+# mangobutter: the setup's files in ~/.local/share/mango (replaced whole
+# when the package changes, as its installer does), the generated state
+# seeded once, then mango-shell's changes on top (apply.sh)
+# --------------------------------------------------------------------------
+[ -n "${MANGOBUTTER:-}" ] || { warn "MANGOBUTTER not set"; exit 0; }
+mkdir -p "$STATE/shipped/state"
+
+if [ "$(cat "$STATE/nix-source" 2>/dev/null)" != "$MANGOBUTTER" ] || [ ! -d "$SHARE/quickshell" ]; then
+    rm -rf "$SHARE"
+    mkdir -p "$SHARE"
+    cp -r "$MANGOBUTTER/share/mango/." "$SHARE/"
+    chmod -R u+w "$SHARE"
+    # apply.sh patches the fresh copy again
+    rm -f "$STATE"/*.patch.applied
+    echo "$MANGOBUTTER" > "$STATE/nix-source"
+    echo "home-activate: mangobutter files installed in $SHARE"
+fi
+
+# generated files (palette, theme.conf, kitty colours, dunstrc): only
+# when missing, so a wallpaper pick is never undone
+for f in "$MANGOBUTTER"/share/mango-setup/state/*; do
+    n=$(basename "$f")
+    [ -e "$STATE/$n" ] || install -m 644 "$f" "$STATE/$n"
+done
+[ -e "$STATE/dunstrc" ] || install -m 644 "$SHARE/dunst/dunstrc" "$STATE/dunstrc"
+
+# dunst (D-Bus activated before autostart runs) and swappy configs
+if [ ! -e "$HOME/.config/dunst/dunstrc" ] || [ -L "$HOME/.config/dunst/dunstrc" ]; then
+    mkdir -p "$HOME/.config/dunst"
+    ln -sfn "$STATE/dunstrc" "$HOME/.config/dunst/dunstrc"
+fi
+if [ ! -e "$HOME/.config/swappy/config" ] || [ -L "$HOME/.config/swappy/config" ]; then
+    mkdir -p "$HOME/.config/swappy"
+    ln -sfn "$SHARE/swappy/config" "$HOME/.config/swappy/config"
+fi
+mkdir -p "$HOME/Screenshots"
+
+# wallpapers: one shared folder, linked into ~/.config/mango (dotfiles'
+# mango package skips the link); the default one when the folder is new
+mkdir -p "$HOME/.local/share/wallpapers"
+if [ -n "${DEFAULT_WALLPAPER:-}" ] && [ ! -e "$HOME/.local/share/wallpapers/mangobutter-journey.png" ]; then
+    install -m 644 "$DEFAULT_WALLPAPER" "$HOME/.local/share/wallpapers/mangobutter-journey.png"
+fi
+if [ -d "$HOME/.config/mango" ] && [ ! -e "$HOME/.config/mango/wallpaper" ]; then
+    ln -s "$HOME/.local/share/wallpapers" "$HOME/.config/mango/wallpaper"
+fi
+
+# the bar changes: Focus Timer, agents, Superwhisper, clock, layout
+if [ -x "$DOTFILES/mango-shell/apply.sh" ]; then
+    "$DOTFILES/mango-shell/apply.sh" || warn "mango-shell/apply.sh failed (see above)"
+fi
+
+# GTK coloured from the shipped palette, as the installer does, until a
+# wallpaper pick (or a theme of your own) sets one
+cur_gtk=$(sed -n 's/^gtk-theme-name=//p' "$HOME/.config/gtk-3.0/settings.ini" 2>/dev/null)
+if [ -z "$cur_gtk" ] || [ "$cur_gtk" = Orchis-Nord-Template ]; then
+    ini() { sed -n "s/^$1 *= *//p" "$STATE/colors.ini"; }
+    ansi() { awk -v k="color$1" '$1 == k {print $2}' "$STATE/kitty-theme.conf"; }
+    mkdir -p "$HOME/.config/gtk-3.0"
+    [ -f "$HOME/.config/gtk-3.0/settings.ini" ] || printf '[Settings]\ngtk-theme-name=Orchis-Nord-Template\ngtk-icon-theme-name=Colloid-Dark\n' > "$HOME/.config/gtk-3.0/settings.ini"
+    "$SHARE/scripts/gtk-theme" "$(ini background)" "$(ini background-alt)" \
+        "$(ini border)" "$(ini primary)" "$(ini alert)" "$(ansi 2)" "$(ansi 3)" "$(ansi 5)" \
+        || warn "GTK not themed yet; pick a wallpaper (Super+Shift+p)"
+fi
+exit 0

@@ -1,8 +1,0 @@
-[output]
-scale = 1.0
-
-[clock]
-enabled = true
-position = "above-panel"
-time_format = "{:%I:%M %p}"
-date_format = "%x"
