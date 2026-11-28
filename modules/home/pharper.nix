@@ -127,6 +127,19 @@ in
     Environment=GI_TYPELIB_PATH=/run/current-system/sw/lib/girepository-1.0
   '';
 
+  # Omarchy's themes (pkgs/omarchy-themes.nix): their palettes beside
+  # mangobutter's own in butter-themes, their previews for the theme picker
+  # (Super+Shift+T), and their wallpapers linked one by one into the shared
+  # wallpaper folder, beside your own (the Backgrounds tab, Super+Shift+W,
+  # shows the theme's).
+  xdg.dataFile."butter-themes/omarchy.conf".source =
+    "${local.omarchy-themes}/share/butter-themes/omarchy.conf";
+  xdg.dataFile."omarchy-themes".source = "${local.omarchy-themes}/share/omarchy-themes";
+  xdg.dataFile."wallpapers" = {
+    source = "${local.omarchy-themes}/share/wallpapers";
+    recursive = true;
+  };
+
   # Weekly update check: nixos-update --check, but on a copy of the repo so
   # /etc/nixos's flake.lock is left alone, then a notification when the
   # build differs from the running system. Applying stays a choice: the

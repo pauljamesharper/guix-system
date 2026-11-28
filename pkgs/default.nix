@@ -9,4 +9,5 @@ in
   inherit (themes) orchis-nord-template colloid-icon-theme-butter;
   lxpolkit = pkgs.callPackage ./lxpolkit.nix { };
   nixos-update = pkgs.callPackage ./nixos-update.nix { };
+  omarchy-themes = pkgs.callPackage ./omarchy-themes.nix { };
 }
