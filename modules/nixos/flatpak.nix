@@ -33,12 +33,14 @@
 
   # MangoHud and gamescope Vulkan layers for the runtime Steam runs on
   # (mangohud %command%, gamescope -f -- %command%): the branch depends on
-  # Steam's runtime, so they are looked up after nix-flatpak's install
+  # Steam's runtime, so they are looked up after nix-flatpak's install.
+  # Started by that install, not by multi-user.target: nix-flatpak's unit
+  # runs after multi-user.target, so hanging this off it made a cycle and
+  # systemd dropped the install job (gUn never got its apps)
   systemd.services.flatpak-steam-layers = {
     description = "Vulkan layers (MangoHud, gamescope) for Flatpak Steam";
     after = [ "flatpak-managed-install.service" ];
-    wants = [ "flatpak-managed-install.service" ];
-    wantedBy = [ "multi-user.target" ];
+    wantedBy = [ "flatpak-managed-install.service" ];
     serviceConfig.Type = "oneshot";
     path = [
       pkgs.flatpak
