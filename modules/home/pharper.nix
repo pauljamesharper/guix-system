@@ -121,12 +121,12 @@ in
     Environment=GI_TYPELIB_PATH=/run/current-system/sw/lib/girepository-1.0
   '';
 
-  # git identity, as section_git sets it (Codeberg's noreply address)
+  # git identity
   programs.git = {
     enable = true;
     settings.user = {
-      name = "gluesniffmonkey";
-      email = "gluesniffmonkey@noreply.codeberg.org";
+      name = "Paul Harper";
+      email = "harper.paul.j@gmail.com";
     };
   };
 }

@@ -32,8 +32,10 @@ in
     gtk4-layer-shell
     at-spi2-core
     gobject-introspection
-    glib
-    pango
+    # .out: the typelibs (GLib, GObject, Gio, Pango, PangoCairo) live in
+    # these outputs; plain glib/pango install only their -bin output
+    glib.out
+    pango.out
     gdk-pixbuf
     harfbuzz
     graphene
