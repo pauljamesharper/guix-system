@@ -226,5 +226,19 @@ in
       name = "Paul Harper";
       email = "harper.paul.j@gmail.com";
     };
+    # commits and tags signed with the SSH key (the keyring's agent holds
+    # it, so no prompt); GitHub and Codeberg show them Verified once the
+    # key is added there as a signing key. allowed_signers lets
+    # `git log --show-signature` check them here too.
+    signing = {
+      format = "ssh";
+      key = "~/.ssh/id_ed25519.pub";
+      signByDefault = true;
+    };
+    settings.gpg.ssh.allowedSignersFile = "~/.config/git/allowed_signers";
   };
+  # this machine's key; gUn's goes here too once it has one
+  xdg.configFile."git/allowed_signers".text = ''
+    harper.paul.j@gmail.com ${lib.removeSuffix "\n" (builtins.readFile ../../hosts/alteredcarbon/ssh.pub)}
+  '';
 }
