@@ -86,6 +86,12 @@ in
     speechd
     espeak-ng
     mangohud # its config is the 'mangohud' stow package
+    # desktop apps (from nixpkgs rather than Flathub; see modules/nixos/flatpak.nix)
+    discord
+    telegram-desktop
+    thunderbird
+    anki
+    bazaar # Flathub store, for what nixpkgs lacks
   ];
 
   # the dotfiles, the user units and mangobutter (scripts/home-activate)

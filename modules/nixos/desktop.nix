@@ -140,10 +140,21 @@ in
     nerd-fonts.symbols-only
   ];
 
-  # Steam (Flatpak, modules/nixos/flatpak.nix): controllers and VR headsets,
-  # GameMode (gamemoderun %command%)
+  # Steam from nixpkgs, with Proton-GE beside Valve's Proton and
+  # Protontricks; controllers and VR headsets (steam-hardware), GameMode
+  # (gamemoderun %command%), gamescope (gamescope -f -- %command%) and
+  # MangoHud (mangohud %command%, in modules/home)
+  programs.steam = {
+    enable = true;
+    extraCompatPackages = [ pkgs.proton-ge-bin ];
+    protontricks.enable = true;
+  };
   hardware.steam-hardware.enable = true;
   programs.gamemode.enable = true;
+  programs.gamescope.enable = true;
+
+  # LocalSend, with its port (53317) open on the firewall
+  programs.localsend.enable = true;
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
