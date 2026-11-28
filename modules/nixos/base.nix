@@ -30,7 +30,6 @@
 
   # the LUKS passphrase and boot in Plymouth's bgrt splash (the firmware's
   # logo, as on Debian)
-  boot.initrd.systemd.enable = true;
   boot.plymouth = {
     enable = true;
     theme = "bgrt";
