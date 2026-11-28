@@ -55,6 +55,7 @@ in
     lsof
     strace
     gdb # crash-diagnose's backtraces
+    local.crash-tools # crash-diagnose, crash-capture, crash-mute (below)
     mise
     pipx # python3 is the system's (with PyGObject, superwhisper.nix)
     # desktop programs
@@ -196,6 +197,26 @@ in
       RandomizedDelaySec = "1h";
     };
     Install.WantedBy = [ "timers.target" ];
+  };
+
+  # Crash notifications, after Omarchy (pkgs/crash-tools): a crash of one of
+  # your programs shows "Diagnose with Claude" and "Mute". crash-capture
+  # off|on turns them off and on (the flag file stops the unit starting).
+  systemd.user.services.crash-watch = {
+    Unit = {
+      Description = "Crash notifications (systemd-coredump records, Diagnose with Claude)";
+      ConditionPathExists = "!%h/.local/state/crash-watch/off";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${local.crash-tools}/bin/crash-watch";
+      # its Diagnose and Mute buttons run these by name
+      Environment = "PATH=${local.crash-tools}/bin:/etc/profiles/per-user/pharper/bin:/run/current-system/sw/bin";
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
   };
 
   # git identity

@@ -49,7 +49,6 @@ enable_unit() { # unit target
 }
 enable_unit emacs.service default.target
 enable_unit etesync-dav.service default.target
-enable_unit crash-watch.service default.target
 enable_unit agent-usage.timer timers.target
 enable_unit mise-upgrade.timer timers.target
 

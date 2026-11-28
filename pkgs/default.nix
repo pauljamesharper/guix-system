@@ -10,4 +10,5 @@ in
   lxpolkit = pkgs.callPackage ./lxpolkit.nix { };
   nixos-update = pkgs.callPackage ./nixos-update.nix { };
   omarchy-themes = pkgs.callPackage ./omarchy-themes.nix { };
+  crash-tools = pkgs.callPackage ./crash-tools { };
 }
