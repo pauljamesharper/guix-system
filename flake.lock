@@ -1,0 +1,129 @@
+{
+  "nodes": {
+    "butterpal": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795117824,
+        "narHash": "sha256-8WaXMGRzQw5nUwZps1P+TE7QUqUgEU4wWdba++4Etp4=",
+        "ref": "refs/tags/v0.3.4",
+        "rev": "2d951f57e91960a69e3a68b7082f5a44282df613",
+        "revCount": 10,
+        "type": "git",
+        "url": "https://justaguy.dev/drew/butterpal"
+      },
+      "original": {
+        "ref": "refs/tags/v0.3.4",
+        "type": "git",
+        "url": "https://justaguy.dev/drew/butterpal"
+      }
+    },
+    "butterview": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795405191,
+        "narHash": "sha256-HjMVYZyNwNiVTL+K21nQMBKl1w+8sfFxrhvkl1NGQO4=",
+        "ref": "refs/tags/v0.4.9",
+        "rev": "613fe8070f7dfc5945b7260855fad10f7a262f66",
+        "revCount": 65,
+        "type": "git",
+        "url": "https://justaguy.dev/drew/butterview"
+      },
+      "original": {
+        "ref": "refs/tags/v0.4.9",
+        "type": "git",
+        "url": "https://justaguy.dev/drew/butterview"
+      }
+    },
+    "disko": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795168368,
+        "narHash": "sha256-D35n2Q2v1KrlF9LS/pFl8Z3EBMJW6qvPw5q4HMbXXLg=",
+        "owner": "nix-community",
+        "repo": "disko",
+        "rev": "44761d4f745b95e037458a0e57133c5700c8e320",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "disko",
+        "type": "github"
+      }
+    },
+    "home-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795827905,
+        "narHash": "sha256-Udjs2j0EkvK+qGXKHRIQwXWRgzNBIl4oXSUktuOzbmQ=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "5f5abf5eb8de62d954232f3797b5bf4505656b91",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "nix-flatpak": {
+      "locked": {
+        "lastModified": 1791644268,
+        "narHash": "sha256-f7Z4PmfnRxf7+37NN48ep+KsQauGtL5REE99pJtMNp8=",
+        "owner": "gmodena",
+        "repo": "nix-flatpak",
+        "rev": "02656785ab214fa1c9655f1beaaf0269eeeec2ca",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gmodena",
+        "repo": "nix-flatpak",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1795234589,
+        "narHash": "sha256-f/VVvxf5RsQgWVhUtefoca5ktVg0DA2bnkMOcmSnozo=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "2786a2a72088ecf32aea5b3ec52099e6a7cff78f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "butterpal": "butterpal",
+        "butterview": "butterview",
+        "disko": "disko",
+        "home-manager": "home-manager",
+        "nix-flatpak": "nix-flatpak",
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
