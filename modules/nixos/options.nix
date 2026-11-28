@@ -17,6 +17,15 @@
         section).
       '';
     };
+    fingerprint = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = ''
+        A fingerprint reader fprintd supports: a finger for sudo, polkit and
+        the lock screen once one is enrolled (`fprintd-enroll`). The login
+        itself stays password-only, since the password unlocks the keyring.
+      '';
+    };
     cpu = lib.mkOption {
       type = lib.types.enum [
         "intel"

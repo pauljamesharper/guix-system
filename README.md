@@ -10,10 +10,10 @@ still stowed, so they're edited in place as before.
 
 ```
 flake.nix                 inputs; one nixosConfiguration per hosts/<name>
-hosts/<name>/default.nix  disk, laptop?, CPU vendor (install.sh writes it)
+hosts/<name>/default.nix  disk, laptop?, CPU vendor, fingerprint reader
 hosts/<name>/hardware.nix nixos-generate-config (install.sh writes it)
 modules/nixos/
-  options.nix             my.disk, my.laptop, my.cpu
+  options.nix             my.disk, my.laptop, my.cpu, my.fingerprint
   disko.nix               1 GiB ESP + LUKS2 → btrfs (@, @home, @nix, @log)
   base.nix                boot (systemd-boot, Plymouth), nix, locale, user,
                           firmware, zram, ssh, avahi, nix-ld, debuginfod
@@ -22,7 +22,7 @@ modules/nixos/
   network.nix             NetworkManager + resolved, 1.1.1.2/1.0.0.2 on every
                           network, firewall, Proton VPN
   power.nix               TLP 75–80 % + thermald on laptops, else
-                          power-profiles-daemon
+                          power-profiles-daemon; fprintd
   virtualisation.nix      libvirt + virt-manager (swtpm), podman, distrobox
   flatpak.nix             the Flathub apps, Steam + Proton-GE + layers
   superwhisper.nix        what Superwhisper's vendor build needs

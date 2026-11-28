@@ -49,7 +49,10 @@ cpu=intel
 grep -q AuthenticAMD /proc/cpuinfo && cpu=amd
 laptop=false
 ls /sys/class/power_supply/BAT* >/dev/null 2>&1 && laptop=true
-echo "this machine: $cpu CPU, laptop: $laptop ($(cat /sys/class/dmi/id/sys_vendor /sys/class/dmi/id/product_version 2>/dev/null | tr '\n' ' '))"
+# a Synaptics (06cb) USB fingerprint reader, as Debian's installer looks for
+fingerprint=false
+grep -qx 06cb /sys/bus/usb/devices/*/idVendor 2>/dev/null && fingerprint=true
+echo "this machine: $cpu CPU, laptop: $laptop, fingerprint reader: $fingerprint ($(cat /sys/class/dmi/id/sys_vendor /sys/class/dmi/id/product_version 2>/dev/null | tr '\n' ' '))"
 
 # --------------------------------------------------------------------------
 say "Disk"
@@ -100,6 +103,7 @@ else
     disk = "$DISK";
     laptop = $laptop;
     cpu = "$cpu";
+    fingerprint = $fingerprint;
   };
 }
 EOF

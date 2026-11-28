@@ -1,6 +1,7 @@
 # Debian's 'hardware' section: on a laptop TLP (with battery charge
 # thresholds; it replaces power-profiles-daemon) and, on Intel, thermald;
-# otherwise power-profiles-daemon, which the bar's power menu uses.
+# otherwise power-profiles-daemon, which the bar's power menu uses. And the
+# fingerprint reader, where there is one.
 {
   config,
   lib,
@@ -30,6 +31,11 @@ in
     })
     (lib.mkIf (!cfg.laptop) {
       services.power-profiles-daemon.enable = true;
+    })
+    # Debian's HW_FINGERPRINT_PACKAGES (fprintd + libpam-fprintd)
+    (lib.mkIf cfg.fingerprint {
+      services.fprintd.enable = true; # with enablePam: fprintAuth for every PAM service
+      security.pam.services.greetd.fprintAuth = false;
     })
   ];
 }
