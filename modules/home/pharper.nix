@@ -121,6 +121,64 @@ in
     Environment=GI_TYPELIB_PATH=/run/current-system/sw/lib/girepository-1.0
   '';
 
+  # Weekly update check: nixos-update --check, but on a copy of the repo so
+  # /etc/nixos's flake.lock is left alone, then a notification when the
+  # build differs from the running system. Applying stays a choice: the
+  # bar's Updates pill (nixos-update). The build is cached, so the switch
+  # afterwards is quick.
+  systemd.user.services.nixos-update-check = {
+    Unit.Description = "Check for NixOS updates";
+    Unit.ConditionACPower = true;
+    Service = {
+      Type = "oneshot";
+      Nice = 19;
+      IOSchedulingClass = "idle";
+      ExecStart = toString (
+        pkgs.writeShellScript "nixos-update-check" ''
+          set -eu
+          export PATH=${
+            lib.makeBinPath [
+              pkgs.nix
+              pkgs.nvd
+              pkgs.git
+              pkgs.libnotify
+              pkgs.coreutils
+              pkgs.gnugrep
+            ]
+          }
+          host=$(cat /proc/sys/kernel/hostname)
+          tmp=$(mktemp -d)
+          trap 'rm -rf "$tmp"' EXIT
+          cp -a /etc/nixos "$tmp/repo"
+          nix flake update --flake "$tmp/repo"
+          new=$(nix build --no-link --print-out-paths \
+            "$tmp/repo#nixosConfigurations.$host.config.system.build.toplevel")
+          if [ "$new" = "$(readlink -f /run/current-system)" ]; then
+            echo "up to date"
+            exit 0
+          fi
+          diff=$(nvd diff /run/current-system "$new")
+          echo "$diff"
+          # version changes only: a config edit not switched to yet also
+          # makes the build differ, and isn't an update
+          n=$(printf '%s\n' "$diff" | grep -c '^\[U' || true)
+          [ "$n" -gt 0 ] || exit 0
+          notify-send -a "NixOS" -i system-software-update "NixOS updates ready" \
+            "$n package updates. Run them from the bar's Updates pill (nixos-update)."
+        ''
+      );
+    };
+  };
+  systemd.user.timers.nixos-update-check = {
+    Unit.Description = "Weekly NixOS update check";
+    Timer = {
+      OnCalendar = "weekly";
+      Persistent = true; # catches up after the laptop was off or asleep
+      RandomizedDelaySec = "1h";
+    };
+    Install.WantedBy = [ "timers.target" ];
+  };
+
   # git identity
   programs.git = {
     enable = true;
